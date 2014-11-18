@@ -62,7 +62,7 @@ def regen_ss_file():
     os.write(fd,binascii.hexlify(data))
     os.close(fd)
 
-    http_user = "apache"
+    http_user = "www-data"
     if utils.check_dist() in [ "debian", "ubuntu" ]:
         http_user = "www-data"
     elif utils.check_dist() in [ "suse", "opensuse" ]:

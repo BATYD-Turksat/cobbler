@@ -100,8 +100,8 @@ restorestate:
 		chmod -R +x /var/www/cobbler/svc; \
 	fi
 	if [ -d /usr/share/cobbler/web ] ; then \
-		chmod -R +x /usr/share/cobbler/web/cobbler/cobbler_web; \
-		chmod -R +x /srv/www/cobbler/svc; \
+		chmod -R +x /usr/share/cobbler/web/cobbler_web; \
+		chmod -R +x /var/www/cobbler/svc; \
 	fi
 	rm -rf $(statepath)
 
@@ -115,13 +115,8 @@ webtest: devinstall
 
 # Assume we're on RedHat by default, otherwise Debian / Ubuntu
 restartservices:
-	if [ -x /sbin/service ] ; then \
-		/sbin/service cobblerd restart; \
-		/sbin/service httpd restart; \
-	else \
-		/usr/sbin/service cobblerd restart; \
-		/usr/sbin/service apache2 restart; \
-	fi
+	/usr/sbin/service cobblerd restart; \
+	/usr/sbin/service apache2 restart; 
 
 sdist: clean
 	python setup.py sdist

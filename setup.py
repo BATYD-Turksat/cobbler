@@ -170,10 +170,10 @@ if __name__ == "__main__":
 
     if os.path.exists("/etc/SuSE-release"):
         webconfig  = "/etc/apache2/conf.d"
-        webroot     = "/srv/www/"
+        webroot     = "/var/www/"
     elif os.path.exists("/etc/debian_version"):
         webconfig  = "/etc/apache2/conf.d"
-        webroot     = "/srv/www/"
+        webroot     = "/var/www/"
     else:
         webconfig  = "/etc/httpd/conf.d"
         webroot     = "/var/www/"

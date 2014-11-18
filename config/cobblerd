@@ -83,7 +83,9 @@ stop() {
     elif [ -f $DEBIAN_VERSION ]; then
         # Added this since Debian's start-stop-daemon doesn't support spawned processes, will remove
         # when cobblerd supports stopping or PID files.
-        if ps -ef | grep "/usr/bin/python /usr/bin/cobblerd" | grep -v grep | awk '{print $2}' | xargs kill &> /dev/null; then
+        cobbler_pid=$(ps -ef | grep "/usr/bin/python /usr/bin/cobblerd" | grep -v grep | awk '{print $2}')
+        if [ -n ${cobbler_pid} ]; then
+            kill -9 ${cobbler_pid} &> /dev/null
             echo -n "OK"
             RETVAL=0
         else
