@@ -589,6 +589,8 @@ class RepoSync:
         """
         # all_path = os.path.join(repo_path, "*")
         owner = "root:apache"
+        if os.path.exists("/etc/debian_version"):
+            owner = "root:www-data"
         if os.path.exists("/etc/SuSE-release"):
             owner = "root:www"
 
