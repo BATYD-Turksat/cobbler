@@ -715,6 +715,13 @@ class PXEGen:
                 append_line = "%s auto-install/enable=true priority=critical url=%s" % (append_line, kickstart_path)
                 if management_interface:
                     append_line += " netcfg/choose_interface=%s" % management_interface
+                # rework kernel options for debian distros
+                translations = { 'ksdevice':"interface" , 'lang':"locale" }
+                for k,v in translations.iteritems():
+                    append_line = append_line.replace("%s="%k,"%s="%v)
+
+                # interface=bootif causes a failure
+                append_line = append_line.replace("interface=bootif","")
             elif distro.breed == "freebsd":
                 append_line = "%s ks=%s" % (append_line, kickstart_path)
 
