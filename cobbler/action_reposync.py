@@ -516,12 +516,12 @@ class RepoSync:
             for distro in self.distros:
                 if distro is not None and distro.name is not None and repo.name == distro.name:
                     if distro.breed == "debian" and repo.mirror_locally:
-                        mirror_url_deb = ( "rsync://ftp.%s.debian.org/debian/dists/%s/main/installer-%s/current/images/netboot/debian-installer" % ( 'us' , distro.os_version,distro.arch ) )
-                        rsync_cmd = RSYNC_CMD
-                        if rsync_flags:
-                            rsync_cmd = rsync_cmd + " " + rsync_flags
-            
                         for component in repo.apt_components:
+                            mirror_url_deb = ( "rsync://ftp.%s.debian.org/debian/dists/%s/%s/debian-installer" % ( 'us' , distro.os_version,component ) )
+                            rsync_cmd = RSYNC_CMD
+                            if rsync_flags:
+                                rsync_cmd = rsync_cmd + " " + rsync_flags
+            
                             # kick off the rsync now
                             utils.run_this(rsync_cmd, (spacer, mirror_url_deb , dest_path + "/dists/" + distro.os_version + "/" + component), self.logger)
                         
