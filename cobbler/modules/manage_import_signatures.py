@@ -682,7 +682,7 @@ class ImportSignatureManager:
             # if --available-as was specified, limit the files we 
             # pull down via rsync to just those that are critical
             # to detecting what the distro is
-            if network_root is not None:
+            if self.network_root is not None:
                 rsync_cmd = rsync_cmd + " --include-from=/etc/cobbler/import_rsync_whitelist"
 
             # kick off the rsync now

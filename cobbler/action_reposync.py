@@ -509,6 +509,39 @@ class RepoSync:
             rc = utils.subprocess_call(self.logger, cmd)
             if rc !=0:
                 utils.die(self.logger,"cobbler reposync failed")
+              
+            """
+            if distro is debian then debian installer should be installed under the repo-mirror
+            """  
+            for distro in self.distros:
+                if distro is not None and distro.name is not None and repo.name == distro.name:
+                    if distro.breed == "debian" and repo.mirror_locally:
+                        mirror_url_deb = ( "rsync://ftp.%s.debian.org/debian/dists/%s/main/installer-%s/current/images/netboot/debian-installer" % ( 'us' , distro.os_version,distro.arch ) )
+                        rsync_cmd = RSYNC_CMD
+                        if rsync_flags:
+                            rsync_cmd = rsync_cmd + " " + rsync_flags
+            
+                        for component in repo.apt_components:
+                            # kick off the rsync now
+                            utils.run_this(rsync_cmd, (spacer, mirror_url_deb , dest_path + "/dists/" + distro.os_version + "/" + component), self.logger)
+                        
+                        cmd = "for file in $(zcat %s/dists/%s/main/debian-installer/binary-%s/Packages.gz | grep -i \"Filename:\" | awk '{print $2}'); /" 
+                        "do/" 
+                        "    if [ ! -f %s/${file} ];/"
+                        "    then/"
+                        "        directory=$(dirname  %s/${file});/"
+                        "        if [ ! -d ${directory} ];/"
+                        "        then/"
+                        "            mkdir -p ${directory};/"
+                        "        fi/"
+                        "        rsync -av rsync://ftp.%s.debian.org/debian/${file} %s/${file};/"
+                        "    fi/"
+                        "done" % (dest_path,distro.os_version,distro.arch,dest_path,dest_path,'us',dest_path)
+                        rc = utils.subprocess_call(self.logger,['/bin/bash', '-c', cmd]);
+                        if rc !=0:
+                            utils.die(self.logger,"cobbler debian_installer sync failed")
+
+                    pass;
 
        
     def create_local_file(self, dest_path, repo, output=True):
