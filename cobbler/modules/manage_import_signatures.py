@@ -35,6 +35,7 @@ import item_distro
 import item_profile
 import item_repo
 import item_system
+from cobbler.api import RSYNC_CMD
 
 # Import aptsources module if available to obtain repo mirror.
 try:
@@ -644,8 +645,12 @@ class ImportSignatureManager:
         repo.set_breed("apt")
         repo.set_arch(distro.arch)
         repo.set_keep_updated(True)
-        repo.set_apt_components("main universe") # TODO: make a setting?
-        repo.set_apt_dists("%s %s-updates %s-security" % ((distro.os_version,)*3))
+        if distro.breed == "debian":
+            repo.set_apt_components("main contrib non-free") # TODO: make a setting?
+            repo.set_apt_dists("%s %s-updates %s-backports" % ((distro.os_version,)*3))
+        else:
+            repo.set_apt_components("main universe") # TODO: make a setting?
+            repo.set_apt_dists("%s %s-updates %s-security" % ((distro.os_version,)*3))
         repo.yumopts["--ignore-release-gpg"] = None
         repo.yumopts["--verbose"] = None
         repo.set_name(distro.name)
@@ -663,6 +668,26 @@ class ImportSignatureManager:
         #FIXME:
         # Add the found/generated repos to the profiles
         # that were created during the import process
+        if distro.breed == "debian":
+            """
+            if the distro is debian vmlinuz should be network enabled kernel.
+            if the distro is debian initrd has network utils.
+            To accomplish these goals we should download netboot kernel and initrd
+            """
+            mirror_url_deb = ( "rsync://ftp.%s.debian.org/debian/dists/%s/main/installer-%s/current/images/netboot/debian-installer/%s" % ( 'us' , distro.os_version,distro.arch,distro.arch ) )
+            rsync_cmd = RSYNC_CMD
+            if rsync_flags:
+                rsync_cmd = rsync_cmd + " " + rsync_flags
+
+            # if --available-as was specified, limit the files we 
+            # pull down via rsync to just those that are critical
+            # to detecting what the distro is
+            if network_root is not None:
+                rsync_cmd = rsync_cmd + " --include-from=/etc/cobbler/import_rsync_whitelist"
+
+            # kick off the rsync now
+            utils.run_this(rsync_cmd, (spacer, mirror_url_deb + "/linux", distro.kernel), self.logger)
+            utils.run_this(rsync_cmd, (spacer, mirror_url_deb + "/initrd.gz", distro.initrd), self.logger)
 
     def get_repo_mirror_from_apt(self):
         """
