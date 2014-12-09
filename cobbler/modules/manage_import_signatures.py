@@ -676,8 +676,6 @@ class ImportSignatureManager:
             """
             mirror_url_deb = ( "rsync://ftp.%s.debian.org/debian/dists/%s/main/installer-%s/current/images/netboot/debian-installer/%s" % ( 'us' , distro.os_version,distro.arch,distro.arch ) )
             rsync_cmd = RSYNC_CMD
-            if rsync_flags:
-                rsync_cmd = rsync_cmd + " " + rsync_flags
 
             # if --available-as was specified, limit the files we 
             # pull down via rsync to just those that are critical
