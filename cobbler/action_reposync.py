@@ -525,6 +525,10 @@ class RepoSync:
                             # kick off the rsync now
                             utils.run_this(rsync_cmd, (spacer, mirror_url_deb , dest_path + "/dists/" + distro.os_version + "/" + component), self.logger)
                         
+                        arch = distro.arch
+                        if arch == "x86_64":
+                            arch = "amd64"
+                            
                         cmd = "for file in $(zcat %s/dists/%s/main/debian-installer/binary-%s/Packages.gz | grep -i \"Filename:\" | awk '{print $2}'); /" 
                         "do/" 
                         "    if [ ! -f %s/${file} ];/"
@@ -536,7 +540,7 @@ class RepoSync:
                         "        fi/"
                         "        rsync -av rsync://ftp.%s.debian.org/debian/${file} %s/${file};/"
                         "    fi/"
-                        "done" % (dest_path,distro.os_version,distro.arch,dest_path,dest_path,'us',dest_path)
+                        "done" % (dest_path,distro.os_version,arch,dest_path,dest_path,'us',dest_path)
                         rc = utils.subprocess_call(self.logger,['/bin/bash', '-c', cmd]);
                         if rc !=0:
                             utils.die(self.logger,"cobbler debian_installer sync failed")
