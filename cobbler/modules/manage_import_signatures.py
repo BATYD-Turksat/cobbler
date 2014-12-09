@@ -36,6 +36,7 @@ import item_profile
 import item_repo
 import item_system
 from cobbler.api import RSYNC_CMD
+from platform import architecture
 
 # Import aptsources module if available to obtain repo mirror.
 try:
@@ -674,7 +675,11 @@ class ImportSignatureManager:
             if the distro is debian initrd has network utils.
             To accomplish these goals we should download netboot kernel and initrd
             """
-            mirror_url_deb = ( "rsync://ftp.%s.debian.org/debian/dists/%s/main/installer-%s/current/images/netboot/debian-installer/%s" % ( 'us' , distro.os_version,distro.arch,distro.arch ) )
+            arch = distro.arch
+            if arch == "x86_64":
+                arch = "amd64"
+                
+            mirror_url_deb = ( "rsync://ftp.%s.debian.org/debian/dists/%s/main/installer-%s/current/images/netboot/debian-installer/%s" % ( 'us' , distro.os_version,arch,arch ) )
             rsync_cmd = RSYNC_CMD
             spacer = ""
             # if --available-as was specified, limit the files we 
