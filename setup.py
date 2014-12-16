@@ -174,24 +174,24 @@ if __name__ == "__main__":
             if os.path.exists("config/cobbler.conf"):
                 os.remove("config/cobbler.conf")
             shutil.copy("config/cobbler.nginx.conf", "config/cobbler.conf")
-            webconfig  = "/etc/nginx/conf.d"
+            webconfig  = "/etc/nginx/conf.d/"
         else:
             if os.path.exists("config/cobbler.conf"):
                 os.remove("config/cobbler.conf")
             shutil.copy("config/cobbler.apache2.conf", "config/cobbler.conf")
-            webconfig  = "/etc/apache2/conf.d"
+            webconfig  = "/etc/apache2/conf.d/"
         webroot     = "/var/www/"
     elif os.path.exists("/etc/debian_version"):
-        if os.path.exists("/etc/nginx/sites-enabled"):
+        if os.path.exists("/etc/nginx/sites-enabled/"):
             if os.path.exists("config/cobbler.conf"):
                 os.remove("config/cobbler.conf")
             shutil.copy("config/cobbler.nginx.conf", "config/cobbler.conf")
-            webconfig  = "/etc/nginx/conf.d"
+            webconfig  = "/etc/nginx/conf.d/"
         else:
             if os.path.exists("config/cobbler.conf"):
                 os.remove("config/cobbler.conf")
             shutil.copy("config/cobbler.apache2.conf", "config/cobbler.conf")
-            webconfig  = "/etc/apache2/conf.d"
+            webconfig  = "/etc/apache2/conf.d/"
         webroot     = "/var/www/"
     else:
         webconfig  = "/etc/httpd/conf.d"
@@ -200,43 +200,17 @@ if __name__ == "__main__":
     webcontent = webroot + "cobbler_webui_content/"
     webimages = webcontent + "/images/"
 
-
-    setup(
-        cmdclass={'build_py': build_py, 'test': test_command},
-        name = "cobbler",
-        version = VERSION,
-        description = "Network Boot and Update Server",
-        long_description = "Cobbler is a network install server.  Cobbler supports PXE, virtualized installs, and reinstalling existing Linux machines.  The last two modes use a helper tool, 'koan', that integrates with cobbler.  There is also a web interface 'cobbler-web'.  Cobbler's advanced features include importing distributions from DVDs and rsync mirrors, kickstart templating, integrated yum mirroring, and built-in DHCP/DNS Management.  Cobbler has a XMLRPC API for integration with other applications.",
-        author = "Team Cobbler",
-        author_email = "cobbler@lists.fedorahosted.org",
-        url = "http://www.cobblerd.org/",
-        license = "GPLv2+",
-        requires = [
-            "mod_python",
-            "cobbler",
-        ],
-        packages = [
-            "cobbler",
-            "cobbler/modules", 
-            "koan",
-        ],
-        package_dir = {
-            "cobbler_web": "web/cobbler_web",
-        },
-        scripts = [
-            "bin/cobbler",
-            "bin/cobblerd",
-            "bin/cobbler-ext-nodes",
-            "bin/koan",
-            "bin/ovz-install",
-            "bin/cobbler-register",
-        ],
-        data_files = proc_data_files([
+    data_files_raw = [
             # tftpd, hide in /usr/sbin
             ("/usr/sbin", ["bin/tftpd.py"]),
 
-            ("%s" % webconfig,              ["config/cobbler.conf"]),
-            ("%s" % webconfig,              ["config/cobbler_web.conf"]),
+            ("%s" % webconfig,              ["config/cobbler.conf"])
+            
+            ];
+    if os.path.exists("/etc/apache2/sites-enabled"):
+        data_files_raw.append(("%s" % webconfig,              ["config/cobbler_web.conf"]));
+    data_files_raw.extend(
+            [
             ("%s" % initpath,               ["config/cobblerd"]),
             ("%s" % docpath,                ["docs/*.gz"]),
             ("installer_templates",         ["installer_templates/*"]),
@@ -340,5 +314,37 @@ if __name__ == "__main__":
 
             # zone-specific templates directory
             ("%szone_templates" % etcpath,                []),
-        ]),
+        ]);
+
+    setup(
+        cmdclass={'build_py': build_py, 'test': test_command},
+        name = "cobbler",
+        version = VERSION,
+        description = "Network Boot and Update Server",
+        long_description = "Cobbler is a network install server.  Cobbler supports PXE, virtualized installs, and reinstalling existing Linux machines.  The last two modes use a helper tool, 'koan', that integrates with cobbler.  There is also a web interface 'cobbler-web'.  Cobbler's advanced features include importing distributions from DVDs and rsync mirrors, kickstart templating, integrated yum mirroring, and built-in DHCP/DNS Management.  Cobbler has a XMLRPC API for integration with other applications.",
+        author = "Team Cobbler",
+        author_email = "cobbler@lists.fedorahosted.org",
+        url = "http://www.cobblerd.org/",
+        license = "GPLv2+",
+        requires = [
+            "mod_python",
+            "cobbler",
+        ],
+        packages = [
+            "cobbler",
+            "cobbler/modules", 
+            "koan",
+        ],
+        package_dir = {
+            "cobbler_web": "web/cobbler_web",
+        },
+        scripts = [
+            "bin/cobbler",
+            "bin/cobblerd",
+            "bin/cobbler-ext-nodes",
+            "bin/koan",
+            "bin/ovz-install",
+            "bin/cobbler-register",
+        ],
+        data_files = proc_data_files(data_files_raw),
     )
