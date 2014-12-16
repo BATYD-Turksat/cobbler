@@ -60,7 +60,7 @@ savestate:
 	cp -a /var/lib/cobbler/config $(statepath)
 	cp /etc/cobbler/settings $(statepath)/settings
 	cp /etc/cobbler/modules.conf $(statepath)/modules.conf
-	@if [ -d /etc/httpd ] ; then \
+	if [ -d /etc/httpd ] ; then \
 		cp /etc/httpd/conf.d/cobbler.conf $(statepath)/http.conf; \
 		cp /etc/httpd/conf.d/cobbler_web.conf $(statepath)/cobbler_web.conf; \
 	else \
@@ -69,7 +69,7 @@ savestate:
 		else \
 			cp /etc/apache2/conf.d/cobbler.conf $(statepath)/http.conf; \
 			cp /etc/apache2/conf.d/cobbler_web.conf $(statepath)/cobbler_web.conf; \
-		fi \
+		fi; \
 	fi
 	cp /etc/cobbler/users.conf $(statepath)/users.conf
 	cp /etc/cobbler/users.digest $(statepath)/users.digest
@@ -93,7 +93,7 @@ restorestate:
 		else \
 			cp $(statepath)/http.conf /etc/apache2/conf.d/cobbler.conf; \
 			cp $(statepath)/cobbler_web.conf /etc/apache2/conf.d/cobbler_web.conf; \
-		fi \
+		fi; \
 	fi
 	cp $(statepath)/dhcp.template /etc/cobbler/dhcp.template
 	cp $(statepath)/rsync.template /etc/cobbler/rsync.template
