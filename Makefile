@@ -64,7 +64,11 @@ savestate:
 		cp /etc/httpd/conf.d/cobbler.conf $(statepath)/http.conf; \
 		cp /etc/httpd/conf.d/cobbler_web.conf $(statepath)/cobbler_web.conf; \
 	else \
-		cp /etc/apache2/conf.d/cobbler.conf $(statepath)/http.conf; \
+		if [ -d /etc/nginx/sites-enabled ]; then \
+			cp /etc/nginx/conf.d/cobbler.conf $(statepath)/http.conf; \
+		else \
+			cp /etc/apache2/conf.d/cobbler.conf $(statepath)/http.conf; \
+		fi \
 		cp /etc/apache2/conf.d/cobbler_web.conf $(statepath)/cobbler_web.conf; \
 	fi
 	cp /etc/cobbler/users.conf $(statepath)/users.conf
@@ -84,7 +88,11 @@ restorestate:
 		cp $(statepath)/http.conf /etc/httpd/conf.d/cobbler.conf; \
 		cp $(statepath)/cobbler_web.conf /etc/httpd/conf.d/cobbler_web.conf; \
 	else \
-		cp $(statepath)/http.conf /etc/apache2/conf.d/cobbler.conf; \
+		if [ -d /etc/nginx/sites-enabled ]; then \
+			cp $(statepath)/http.conf /etc/nginx/conf.d/cobbler.conf; \
+		else \
+			cp $(statepath)/http.conf /etc/apache2/conf.d/cobbler.conf; \
+		fi; \
 		cp $(statepath)/cobbler_web.conf /etc/apache2/conf.d/cobbler_web.conf; \
 	fi
 	cp $(statepath)/dhcp.template /etc/cobbler/dhcp.template
@@ -94,15 +102,15 @@ restorestate:
 		chown -R apache /var/www/cobbler; \
 	else \
 		chown -R www-data /usr/share/cobbler/web/cobbler_web; \
-	fi
+	fi;
 	if [ -d /var/www/cobbler ] ; then \
 		chmod -R +x /var/www/cobbler/web; \
 		chmod -R +x /var/www/cobbler/svc; \
-	fi
+	fi;
 	if [ -d /usr/share/cobbler/web ] ; then \
 		chmod -R +x /usr/share/cobbler/web/cobbler_web; \
 		chmod -R +x /var/www/cobbler/svc; \
-	fi
+	fi;
 	rm -rf $(statepath)
 
 completion:
@@ -116,7 +124,11 @@ webtest: devinstall
 # Assume we're on RedHat by default, otherwise Debian / Ubuntu
 restartservices:
 	/usr/sbin/service cobblerd restart; \
-	/usr/sbin/service apache2 restart; 
+	if [ -d /etc/nginx/sites-enabled ];then \
+		/usr/sbin/service nginx restart; \ 
+	else \
+		/usr/sbin/service apache2 restart; \
+	fi
 
 sdist: clean
 	python setup.py sdist

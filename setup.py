@@ -4,6 +4,7 @@ from ConfigParser import ConfigParser
 from distutils.core import setup, Command
 from distutils.command.build_py import build_py as _build_py
 import unittest
+import shutil
 
 try:
     import subprocess
@@ -169,10 +170,24 @@ if __name__ == "__main__":
     logpath     = "/var/log/"
 
     if os.path.exists("/etc/SuSE-release"):
-        webconfig  = "/etc/apache2/conf.d"
+        if os.path.exists("/etc/nginx/sites-enabled"):
+            os.remove("config/cobbler.conf")
+            shutil.copy("config/cobbler.nginx.conf", "config/cobbler.conf")
+            webconfig  = "/etc/nginx/conf.d"
+        else:
+            os.remove("config/cobbler.conf")
+            shutil.copy("config/cobbler.apache2.conf", "config/cobbler.conf")
+            webconfig  = "/etc/apache2/conf.d"
         webroot     = "/var/www/"
     elif os.path.exists("/etc/debian_version"):
-        webconfig  = "/etc/apache2/conf.d"
+        if os.path.exists("/etc/nginx/sites-enabled"):
+            os.remove("config/cobbler.conf")
+            shutil.copy("config/cobbler.nginx.conf", "config/cobbler.conf")
+            webconfig  = "/etc/nginx/conf.d"
+        else:
+            os.remove("config/cobbler.conf")
+            shutil.copy("config/cobbler.apache2.conf", "config/cobbler.conf")
+            webconfig  = "/etc/apache2/conf.d"
         webroot     = "/var/www/"
     else:
         webconfig  = "/etc/httpd/conf.d"
