@@ -123,10 +123,11 @@ webtest: devinstall
 
 # Assume we're on RedHat by default, otherwise Debian / Ubuntu
 restartservices:
-	/usr/sbin/service cobblerd restart; \
 	if [ -d /etc/nginx/sites-enabled ];then \
-		/usr/sbin/service nginx restart; \ 
+		/usr/sbin/service cobblerd restart; \
+		/usr/sbin/service nginx restart; \
 	else \
+		/usr/sbin/service cobblerd restart; \
 		/usr/sbin/service apache2 restart; \
 	fi
 
