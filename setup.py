@@ -171,21 +171,25 @@ if __name__ == "__main__":
 
     if os.path.exists("/etc/SuSE-release"):
         if os.path.exists("/etc/nginx/sites-enabled"):
-            os.remove("config/cobbler.conf")
+            if os.path.exists("config/cobbler.conf"):
+                os.remove("config/cobbler.conf")
             shutil.copy("config/cobbler.nginx.conf", "config/cobbler.conf")
             webconfig  = "/etc/nginx/conf.d"
         else:
-            os.remove("config/cobbler.conf")
+            if os.path.exists("config/cobbler.conf"):
+                os.remove("config/cobbler.conf")
             shutil.copy("config/cobbler.apache2.conf", "config/cobbler.conf")
             webconfig  = "/etc/apache2/conf.d"
         webroot     = "/var/www/"
     elif os.path.exists("/etc/debian_version"):
         if os.path.exists("/etc/nginx/sites-enabled"):
-            os.remove("config/cobbler.conf")
+            if os.path.exists("config/cobbler.conf"):
+                os.remove("config/cobbler.conf")
             shutil.copy("config/cobbler.nginx.conf", "config/cobbler.conf")
             webconfig  = "/etc/nginx/conf.d"
         else:
-            os.remove("config/cobbler.conf")
+            if os.path.exists("config/cobbler.conf"):
+                os.remove("config/cobbler.conf")
             shutil.copy("config/cobbler.apache2.conf", "config/cobbler.conf")
             webconfig  = "/etc/apache2/conf.d"
         webroot     = "/var/www/"
