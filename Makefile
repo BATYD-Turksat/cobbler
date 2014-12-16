@@ -104,7 +104,7 @@ restorestate:
 		chown -R www-data /usr/share/cobbler/web/cobbler_web; \
 	fi
 	if [ -d /var/www/cobbler ] ; then \
-		chmod -R +x /var/www/cobbler/web; \
+		chmod -R +x /usr/share/cobbler/web; \
 		chmod -R +x /var/www/cobbler/svc; \
 	fi
 	if [ -d /usr/share/cobbler/web ] ; then \
